@@ -1,0 +1,28 @@
+﻿<div class="container">
+
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="nav navbar-nav">
+      <a routerLink="/login" class="nav-item nav-link" routerLinkActive="active" *ngIf="!auth.loggedIn">
+        <i class="fa fa-sign-in"></i> Login
+      </a>
+      <a routerLink="/register" class="nav-item nav-link" routerLinkActive="active" *ngIf="!auth.loggedIn">
+        <i class="fa fa-user-plus"></i> Register
+      </a>
+      <a routerLink="/account" class="nav-item nav-link" routerLinkActive="active" *ngIf="auth.loggedIn">
+        <i class="fa fa-user"></i> Account ({{auth.currentUser.username}})
+      </a>
+      <a routerLink="/timezone" class="nav-item nav-link" routerLinkActive="active" *ngIf="auth.loggedIn">
+        <i class="fa fa-list"></i> Timezone
+      </a>
+      <a routerLink="/admin" class="nav-item nav-link" routerLinkActive="active" *ngIf="auth.loggedIn && (auth.isAdmin || auth.isManager)">
+        <i class="fa fa-lock"></i> Users
+      </a>
+      <a routerLink="/logout" class="nav-item nav-link" routerLinkActive="active" *ngIf="auth.loggedIn">
+        <i class="fa fa-sign-out"></i> Logout
+      </a>
+    </div>
+  </nav>
+
+  <router-outlet></router-outlet>
+
+</div>

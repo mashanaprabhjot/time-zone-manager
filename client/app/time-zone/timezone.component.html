@@ -1,0 +1,166 @@
+﻿<app-loading [condition]="isLoading"></app-loading>
+<app-toast [message]="toast.message"></app-toast>
+<div class="card" *ngIf="!isLoading">
+  <h4 class="card-header">Current timezones ({{timezones.length}})</h4>
+  <div class="card-block" *ngIf="!isEditing">
+    <div class="form-inline">
+      <div class="form-group">
+        <input class="form-control" type="text" name="search" [(ngModel)]="search" placeholder="Search">
+      </div>
+      <div class="form-group">
+        <button (click)="getTimezonebyName()" class="btn btn-primary" type="submit"><i class="fa fa-search-o"></i> Search</button>
+      </div>
+      <!--<div class="form-group" *ngIf="noResult">
+        No search result found.
+      </div>-->
+    </div>
+  </div>
+  <div class="card-block">
+    <table class="table table-bordered table-striped table-responsive">
+      <thead class="thead-default" *ngIf="!isEditing">
+        <tr>
+          <th>Name</th>
+          <th>Timezone City</th>
+          <th>Diff to GMT</th>
+          <th>Current Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="timezones.length === 0">
+        <tr>
+          <td colspan="5">There are no timezones in the DB. Add a new timezone below.</td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="isEditing == false">
+        <tr *ngFor="let timezone of timezones">
+          <td>{{timezone.name}}</td>
+          <td>{{timezone.city}}</td>
+          <td>{{timezone.diffToGMT}}</td>
+
+          <td>
+
+
+
+            <!--Actual Time : {{timezone.currentTime}}<br />-->
+            {{timezone.currentTime | amDateFormat:'hh:mm:ss A'}}
+          </td>
+          <td>
+            <button class="btn btn-sm btn-warning" (click)="enableEditing(timezone)"><i class="fa fa-pencil"></i> Edit</button> <button class="btn btn-sm btn-danger" (click)="deleteTimezone(timezone)"><i class="fa fa-trash"></i> Delete</button>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="isEditing">
+        <tr>
+          <td colspan="4">
+            <form class="form-inline" #form="ngForm" (ngSubmit)="editTimezone(timezone)" style="display:inline">
+              <div class="form-group">
+                <label class="mr-sm-2" for="editName">Name: </label>
+                <input class="form-control" type="text" id="editName" name="name" [(ngModel)]="timezone.name" placeholder="Name" required>
+              </div>
+              <div class="form-group">
+                <label class="mr-sm-2" for="editCity">City: </label>
+                <input class="form-control" type="text" id="editCity" name="city" [(ngModel)]="timezone.city" placeholder="City" required>
+              </div>
+              <div class="form-group">
+                <label class="mr-sm-2" for="editdiffToGMT">Diff to GMT: </label>
+                <select class="form-control" id="editdiffToGMT" name="diffToGMT" [(ngModel)]="timezone.diffToGMT" required>
+                  <option value="">Diff to GMT</option>
+                  <option value="-12:00">-12:00</option>
+                  <option value="-11:00">-11:00</option>
+                  <option value="-10:00">-10:00</option>
+                  <option value="-09:00">-09:00</option>
+                  <option value="-08:00">-08:00</option>
+                  <option value="-07:00">-07:00</option>
+                  <option value="-06:00">-06:00</option>
+                  <option value="-05:00">-05:00</option>
+                  <option value="-04:00">-04:00</option>
+                  <option value="-03:30">-03:30</option>
+                  <option value="-03:00">-03:00</option>
+                  <option value="-02:00">-02:00</option>
+                  <option value="-01:00">-01:00</option>
+                  <option value="00:00">00:00</option>
+                  <option value="+01:00">+01:00</option>
+                  <option value="+02:00">+02:00</option>
+                  <option value="+03:00">+03:00</option>
+                  <option value="+03:30">+03:30</option>
+                  <option value="+04:00">+04:00</option>
+                  <option value="+04:30">+04:30</option>
+                  <option value="+05:00">+05:00</option>
+                  <option value="+05:30">+05:30</option>
+                  <option value="+05:45">+05:45</option>
+                  <option value="+06:00">+06:00</option>
+                  <option value="+06:30">+06:30</option>
+                  <option value="+07:00">+07:00</option>
+                  <option value="+08:00">+08:00</option>
+                  <option value="+09:00">+09:00</option>
+                  <option value="+09:30">+09:30</option>
+                  <option value="+10:00">+10:00</option>
+                  <option value="+11:00">+11:00</option>
+                  <option value="+12:00">+12:00</option>
+                  <option value="+13:00">+13:00</option>
+                </select>
+              </div>
+
+              <button class="btn btn-sm btn-primary" type="submit" [disabled]="!form.form.valid"><i class="fa fa-floppy-o"></i> Save</button>
+
+            </form>
+            <button class="btn btn-sm btn-warning" (click)="cancelEditing()"><i class="fa fa-times"></i> Cancel</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card" *ngIf="!isEditing">
+  <h4 class="card-header">Add new timezone</h4>
+  <div class="card-block">
+    <form class="form-inline" [formGroup]="addTimezoneForm" (ngSubmit)="addTimezone()" style="text-align:center">
+      <div class="form-group">
+        <input class="form-control" type="text" name="name" formControlName="name" placeholder="Name">
+      </div>
+
+      <div class="form-group">
+        <input class="form-control" type="text" formControlName="city" name="city" placeholder="City" />
+      </div>
+      <div class="form-group">
+        <select class="form-control" name="differenceToGmt" formControlName="diffToGMT">
+          <option value="">Diff to GMT</option>
+          <option value="-12:00">-12:00</option>
+          <option value="-11:00">-11:00</option>
+          <option value="-10:00">-10:00</option>
+          <option value="-09:00">-09:00</option>
+          <option value="-08:00">-08:00</option>
+          <option value="-07:00">-07:00</option>
+          <option value="-06:00">-06:00</option>
+          <option value="-05:00">-05:00</option>
+          <option value="-04:00">-04:00</option>
+          <option value="-03:30">-03:30</option>
+          <option value="-03:00">-03:00</option>
+          <option value="-02:00">-02:00</option>
+          <option value="-01:00">-01:00</option>
+          <option value="00:00">00:00</option>
+          <option value="+01:00">+01:00</option>
+          <option value="+02:00">+02:00</option>
+          <option value="+03:00">+03:00</option>
+          <option value="+03:30">+03:30</option>
+          <option value="+04:00">+04:00</option>
+          <option value="+04:30">+04:30</option>
+          <option value="+05:00">+05:00</option>
+          <option value="+05:30">+05:30</option>
+          <option value="+05:45">+05:45</option>
+          <option value="+06:00">+06:00</option>
+          <option value="+06:30">+06:30</option>
+          <option value="+07:00">+07:00</option>
+          <option value="+08:00">+08:00</option>
+          <option value="+09:00">+09:00</option>
+          <option value="+09:30">+09:30</option>
+          <option value="+10:00">+10:00</option>
+          <option value="+11:00">+11:00</option>
+          <option value="+12:00">+12:00</option>
+          <option value="+13:00">+13:00</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="!addTimezoneForm.valid"><i class="fa fa-floppy-o"></i> Add</button>
+    </form>
+  </div>
+</div>

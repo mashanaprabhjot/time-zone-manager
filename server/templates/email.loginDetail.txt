@@ -1,0 +1,22 @@
+<div>
+<p>
+  Hi {{username}},
+</p>
+
+<p>
+  Welcome to test project. Please find your login details below. 
+</p>
+
+<p><b>Username:</b> {{user_username}}</p>
+<p><b>Password:</b> {{user_password}}</p>
+
+<p>
+  <b>Click here: </b><a href="{{site_url}}">To Login Now</a>
+</p>
+
+<p>
+  Thank You,<br/>
+  <a href="site_url">test project</a><br/>
+</p>
+
+</div>
